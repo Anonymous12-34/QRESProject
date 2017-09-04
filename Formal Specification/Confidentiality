@@ -1,0 +1,72 @@
+(*For checking the confidentiality we send 2 different inputs from the CSP and checks whether they are indistinguishable. To achieve this we define xa, xb, ya and yb as free variables*)
+
+set traceDisplay = long. 
+
+free c: channel.
+free cb: channel.
+free c1: channel.
+free c2: channel.
+
+type key.
+type pkey.
+type skey.
+
+free xb:bitstring.
+free xa:bitstring.
+free yb:bitstring.
+free ya:bitstring.
+
+(*Symmetric enc/dec*)
+
+fun senc(bitstring,key):bitstring.
+reduc forall m: bitstring, k:key; sdec(senc(m,k),k) = m.
+
+(*Garbling function and inputs*)
+
+fun gar(bitstring,key):bitstring.
+reduc forall m:bitstring, k:key; ungar(gar(m,k),k) = m.
+
+(*Commitment and decommitment*)
+fun commit(bitstring,bitstring):bitstring.
+
+fun eval(bitstring,bitstring):bitstring.
+
+
+(*///////////////////////////////////////////////////*)
+
+let CSP(K:key,xf:bitstring,xcsp:bitstring)=
+	
+(*	new sigma_csp:bitstring;
+	out(c,aenc(sigma_csp, pkB));*)
+
+	in(c,x_commit:bitstring); (*Receiving B's commitment*)
+	let x_garcommit=gar(x_commit,K)in (*B's commitment garbling*)
+
+	let x_garf=gar(xf,K) in (*Function garbling*)
+	let x_garx=gar(xcsp,K)in (*CSP's input garbling*)
+	out(c,eval(x_garx,x_garf));
+	
+	out(c,x_garcommit).
+
+(*******\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\***********************)
+
+let B(yb:bitstring)=
+(*	in(c,y_dec:bitstring);
+	let(y_verify=adec(y_dec,skB));*)
+
+	new nb:bitstring;
+	let y_commit=commit(yb,nb)in (*B commits its input*)
+	out(c,y_commit);
+
+	in(c,y_gareval:bitstring);
+	in(c,y_gary:bitstring); (*garbled B commitment*)
+	let y_result=eval(y_gareval,y_gary)in
+	out(c,y_result).
+
+process
+	new f1:bitstring;
+	new K:key;
+(
+(!CSP(K,f1,choice[xa,xb]) |!CSP(K,f1,choice[xb,xa]) | !B(choice[ya,yb])| !B(choice[yb,ya]))
+)
+
