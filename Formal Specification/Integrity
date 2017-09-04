@@ -1,0 +1,98 @@
+(*For checking the secrecy of the CSP and B inputs we define x1 and y1 as private variables*)
+
+set traceDisplay = long. 
+
+free c: channel.
+
+type key.
+type pkey.
+type skey.
+
+free x1:bitstring [private].
+free y1:bitstring [private].
+
+(*Symmetric enc/dec*)
+
+fun senc(bitstring,key):bitstring.
+reduc forall m: bitstring, k:key; sdec(senc(m,k),k) = m.
+
+(*Garbling function and inputs*)
+
+fun gar(bitstring,key):bitstring.
+reduc forall m:bitstring, k:key; ungar(gar(m,k),k) = m.
+reduc forall m:bitstring,m1:bitstring,k:key; getgar(gar(m,k),m1)= gar(m1,k).
+
+(*Evaluation function*)
+
+fun eval(bitstring,bitstring,bitstring):bitstring.
+reduc forall m:bitstring,m1:bitstring,m2:bitstring,k:key; gareval(gar(m,k),gar(m1,k),gar(m2,k)) = eval(m,m1,m2).
+
+(*Commitment and decommitment*)
+fun commit(bitstring,bitstring):bitstring.
+reduc forall m:bitstring,m1:bitstring,m2:bitstring,k:key; decommit(gar(m,k),m1,m2)= gar(m1,k).
+
+event CSPbegin(bitstring,bitstring,bitstring).
+event Bbegin(bitstring,bitstring,bitstring).
+event CSPend(bitstring,bitstring,bitstring,bitstring).
+event Bend(bitstring,bitstring,bitstring,bitstring).
+
+(*///////////////////////////////////////////////////*)
+
+let CSP(xf:bitstring,xcsp:bitstring)=
+	
+	in(c,x_commit:bitstring); (*Receiving B's commitment*)
+
+	event CSPbegin(xf,xcsp,x_commit);
+
+	new K:key;
+	
+	let x_garf=gar(xf,K) in (*Function garbling*)
+	out(c,x_garf);
+	let x_garx=gar(xcsp,K)in (*CSP's input garbling*)
+	out(c,x_garx);
+	let x_garcommit=gar(x_commit,K)in (*B's commitment garbling*)
+	out(c,x_garcommit);
+
+						(*//Decommented-used for testing///*)
+
+(*	in(c,(xb:bitstring, x_result:bitstring)); *)
+(*	Till the previous line attacker(yb) is false but attacker(xcsp) is true	*)
+(*	if x_result=eval(xf,xcsp,xb) then*)
+(*	out (c,xcsp) else out(c,x_result);*)
+(* checking whether the results at CSP and B are equal by publishing xcsp if they are equal-- thus attacker(xcsp) is false after the previous line*)
+(*//End of testing///*)
+in(c,x_result:bitstring);
+event CSPend(xf,xcsp,x_commit,x_result).
+
+
+(*******\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*********)
+
+let B(yb_1:bitstring)=
+
+	new nb_1:bitstring;
+	let y_commit=commit(yb_1,nb_1)in (*B commits its input*)
+	out(c,y_commit);
+
+	in(c,y_garf_1:bitstring); (*garbled function*)
+	in(c,y_garx_1:bitstring); (*garbled CSP input *)
+
+	event Bbegin(y_garf_1,y_garx_1,yb_1);
+
+	in(c,y_gary_1:bitstring); (*garbled B commitment*)
+	let y_result_1=gareval(y_garf_1,y_garx_1,y_gary_1)in (*Calculating the Gareval which should be equal to the eval fn*)
+
+(*//Decommented-used for testing///*)
+(*checking whether the results at CSP and B are equal, to do so we have to send yb *)
+(*out(c,(y_gary_1,y_result_1));*)
+(*//End of testing///*)
+
+	out(c,y_result_1);
+	event Bend(y_garf_1,y_garx_1,yb_1,y_result_1).
+
+(*******\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\***********************)
+
+process
+	new f1:bitstring;
+(
+(!CSP(f1,x1)|!B(y1))
+)
