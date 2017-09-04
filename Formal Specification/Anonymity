@@ -1,0 +1,111 @@
+set traceDisplay = long. 
+
+free c: channel. 
+
+free Ccspn1:channel.
+free Ccspn1_1:channel.
+free Ccspn1_2:channel.
+free Cn1n2:channel.
+free Cn1n2_1:channel.
+free Cn1n2_2:channel.
+free Cn2n3:channel.
+free Cn2n3_1:channel.
+free Cn2n3_2:channel.
+free Cexit:channel.
+free Cpriv:channel[private].
+
+type key.
+type pkey.
+type skey.
+
+free msg1:bitstring.    
+free msg2:bitstring.
+
+fun keytobs(pkey):bitstring.
+
+(*Symmetric enc/dec*)
+
+fun senc(bitstring,key):bitstring.
+reduc forall m:bitstring, k:key; sdec(senc(m,k),k) = m.
+
+(*Asymmetric enc/dec*)
+
+fun pk(skey):pkey.
+fun aenc(bitstring,pkey):bitstring.
+reduc forall m: bitstring, k:skey; adec(aenc(m,pk(k)),k) = m.
+
+(*///////////////////////////////////////////////////*)
+
+
+let CSP(sessionKeyN1:key,sessionKeyN2:key, sessionKeyN3:key, m:bitstring) =
+  
+	out(Ccspn1, senc(senc(senc(m, sessionKeyN3),sessionKeyN2),sessionKeyN1)).
+
+(*////////////////////////////Entry Node N1////////////////////////////////////*)
+			(*//////////////Cicruit 1//////////////////////*)
+
+let N1(sessionKeyN1_1:key,sessionKeyN1_2:key)=
+
+	in(Ccspn1_1, OR1_1:bitstring);
+    out(Cn1n2,sdec(OR1_1,sessionKeyN1_1));
+	
+(*	in(Ccspn1_1,m1_1:bitstring);
+	out(Cn1n2, m1_1);*)
+
+			(*//////////////Cicruit 2//////////////////////*)
+
+	in(Ccspn1_2, OR1_2:bitstring);
+    out(Cn1n2,sdec(OR1_2,sessionKeyN1_2)).
+	
+(*	in(Ccspn1_2,m1_2:bitstring);
+	out(Cn1n2, m1_2).*)
+
+(*////////////////////////////Middle Node N2////////////////////////////////////*)
+			(*//////////////Cicruit 1//////////////////////*)
+
+let N2(sessionKeyN2_1:key,sessionKeyN2_2:key)=
+
+
+	in(Cn1n2_1, OR2_1:bitstring);
+ (*  let (m2_1:bitstring) = sdec(OR2_1,sessionKeyN2_1) in
+    in(Cn1n2_2, m2_1:bitstring);*)
+    out(Cn2n3,sdec(OR2_1,sessionKeyN2_1));
+			(*//////////////Cicruit 2//////////////////////*)
+
+ 	in(Cn1n2_2, OR2_2:bitstring);
+ (* let (m2_2:bitstring) = sdec(OR2_2,sessionKeyN2_2) in
+  	in(Cn1n2_2, m2_2:bitstring);*)
+    out(Cn2n3,sdec(OR2_2,sessionKeyN2_2)).
+
+(*////////////////////////////Exit Node N3////////////////////////////////////*)
+			(*//////////////Cicruit 1//////////////////////*)
+
+let N2(sessionKeyN3_1:key,sessionKeyN3_2:key)=
+
+	in(Cn2n3_1, OR3_1:bitstring);
+ let (m3_1:bitstring) = sdec(OR3_1,sessionKeyN3_1) in
+    out(Cpriv,m3_1);
+			(*//////////////Cicruit 2//////////////////////*)
+
+ 	in(Cn1n2_2, OR3_2:bitstring);
+ let (m3_2:bitstring) = sdec(OR3_2,sessionKeyN3_2) in
+    out(Cpriv,m3_2).
+
+process
+
+	new sessionKeyN1_1:key;
+	new sessionKeyN1_2:key;
+	new sessionKeyN2_1:key;
+	new sessionKeyN2_2:key;
+	new sessionKeyN3_1:key;
+	new sessionKeyN3_2:key;
+
+
+(*Attacker knowlage*)
+ out(c, (sessionKeyN1_1, sessionKeyN1_2)); 
+(* out(c, (sessionKeyN2_1, sessionKeyN2_2)); *)
+ out(c, (sessionKeyN3_1, sessionKeyN3_2));
+ (
+(!CSP(sessionKeyN1_1,sessionKeyN2_1, sessionKeyN3_1, choice[msg1,msg2])) |(!CSP(sessionKeyN1_2,sessionKeyN2_2,sessionKeyN3_2,choice[msg2,msg1])) |(!N1(sessionKeyN1_1,sessionKeyN1_2))|(!N2(sessionKeyN2_1,sessionKeyN2_2))|(!N2(sessionKeyN3_1,sessionKeyN3_2))
+ )
+
