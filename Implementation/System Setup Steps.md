@@ -1,13 +1,19 @@
 #QRES System Setup Steps
 
 1- Install Tomcat and Test working perfectly.
+
 2- Install apache tomcat Server
+
 3- Configure it in Netbeans (https://www.youtube.com/watch?v=tz5LU8Wyo8M)
+
 4- Create Web services project in Netbeans and test everything is working. (https://www.youtube.com/watch?v=saK-t5hStvA)
+
 5- Install Tor Services and check working perfectly. (Install TOR services==> https://www.torproject.org/docs/tor-doc-osx.html.en)
+
 6- Checking tor services by typing the following commands
   $ sudo service tor start 
   $ sudo systemctl start tor.service
+
 7- Configure Tomcat and Tor services. (https://www.torproject.org/docs/tor-hidden-service.html.en)
 
 8- On Tomcat default install, edit META-INF/context.xml to allow connections only from localhost:
