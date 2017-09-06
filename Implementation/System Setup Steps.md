@@ -1,4 +1,4 @@
-QRES System Setup Steps
+#QRES System Setup Steps
 
 1- Install Tomcat and Test working perfectly.
 2- Install apache tomcat Server
