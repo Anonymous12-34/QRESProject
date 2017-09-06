@@ -39,4 +39,5 @@ the tokens matching the keywords.
 14- Open Tor browser and type.
 7ludtxdcobw5l2ut.onion/CloudEncryption/ keyword.jsp
 ***Run the keyword.jsp file and find search keyword (your keyword is encrypted and in process of searching for the matching token)***
+
 15- You can check AWS dynamoDB tables for update by amazon aws login.
