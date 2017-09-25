@@ -52,7 +52,7 @@ let CSP(xf:bitstring,xcsp:bitstring)=
 	out(c,x_garcommit);
 	in(c,x_result:bitstring);
 
-						(*//Decommented-used for testing///*)
+	(*//Decommented-used for testing///*)
 
 (*	in(c,(xb:bitstring, x_result:bitstring)); *)
 (*	Till the previous line attacker(yb) is false but attacker(xcsp) is true	*)
@@ -60,7 +60,6 @@ let CSP(xf:bitstring,xcsp:bitstring)=
 (*	out (c,xcsp) else out(c,x_result);*)
 (* checking whether the results at CSP and B are equal by publishing xcsp if they are equal-- thus attacker(xcsp) is false after the previous line*)
 (*//End of testing///*)
-in(c,x_result:bitstring);
 (*******\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\***********************)
 
 let B(yb_1:bitstring)=
@@ -73,13 +72,12 @@ let B(yb_1:bitstring)=
 	in(c,y_garx_1:bitstring); (*garbled CSP input *)
 
 	in(c,y_gary_1:bitstring); (*garbled B commitment*)
-	out(c,y_result_1);
+	let y_result_1=gareval(y_garf_1,y_garx_1,y_gary_1) in
 
 (*//Decommented-used for testing///*)
-(*checking whether the results at CSP and B are equal, to do so we have to send yb *)
-(*out(c,(y_gary_1,y_result_1));*)
+(*checking whether the results at CSP and B are equal, to do so we have to send yb_1 along with y_result_1 *)
+(*out(c,(yb_1,y_result_1));*)
 (*//End of testing///*)
-
 	out(c,y_result_1);
 (*******\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\***********************)
 
