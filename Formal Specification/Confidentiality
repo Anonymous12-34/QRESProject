@@ -21,14 +21,13 @@ free ya:bitstring.
 fun senc(bitstring,key):bitstring.
 reduc forall m: bitstring, k:key; sdec(senc(m,k),k) = m.
 
-(*Garbling function and inputs*)
-
+(*One way garbling function*)
 fun gar(bitstring,key):bitstring.
-reduc forall m:bitstring, k:key; ungar(gar(m,k),k) = m.
 
-(*Commitment and decommitment*)
+(*Commitment*)
 fun commit(bitstring,bitstring):bitstring.
 
+(*Evaluation*)
 fun eval(bitstring,bitstring):bitstring.
 
 
