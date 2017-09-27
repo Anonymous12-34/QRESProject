@@ -16,20 +16,16 @@ free y1:bitstring [private].
 fun senc(bitstring,key):bitstring.
 reduc forall m: bitstring, k:key; sdec(senc(m,k),k) = m.
 
-(*Garbling function and inputs*)
-
+(*One way garbling function*)
 fun gar(bitstring,key):bitstring.
-reduc forall m:bitstring, k:key; ungar(gar(m,k),k) = m.
-reduc forall m:bitstring,m1:bitstring,k:key; getgar(gar(m,k),m1)= gar(m1,k).
 
 (*Evaluation function*)
 
 fun eval(bitstring,bitstring,bitstring):bitstring.
 reduc forall m:bitstring,m1:bitstring,m2:bitstring,k:key; gareval(gar(m,k),gar(m1,k),gar(m2,k)) = eval(m,m1,m2).
 
-(*Commitment and decommitment*)
+(*Commitment*)
 fun commit(bitstring,bitstring):bitstring.
-reduc forall m:bitstring,m1:bitstring,m2:bitstring,k:key; decommit(gar(m,k),m1,m2)= gar(m1,k).
 
 event CSPbegin(bitstring,bitstring,bitstring).
 event Bbegin(bitstring,bitstring,bitstring).
