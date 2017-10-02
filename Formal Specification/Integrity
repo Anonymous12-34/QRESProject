@@ -32,7 +32,7 @@ event Bbegin(bitstring,bitstring,bitstring).
 event CSPend(bitstring,bitstring,bitstring,bitstring).
 event Bend(bitstring,bitstring,bitstring,bitstring).
 
-(*///////////////////////////////////////////////////*)
+(*//////////////////////////////////////////////////*)
 
 let CSP(xf:bitstring,xcsp:bitstring)=
 	
