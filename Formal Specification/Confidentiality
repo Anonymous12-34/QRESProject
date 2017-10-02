@@ -31,7 +31,7 @@ fun commit(bitstring,bitstring):bitstring.
 fun eval(bitstring,bitstring):bitstring.
 
 
-(*///////////////////////////////////////////////////*)
+(*//////////////////////////////////////////////////*)
 
 let CSP(K:key,xf:bitstring,xcsp:bitstring)=
 	
