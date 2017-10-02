@@ -56,7 +56,7 @@ let CSP(xf:bitstring,xcsp:bitstring)=
 (*	out (c,xcsp) else out(c,x_result);*)
 (* checking whether the results at CSP and B are equal by publishing xcsp if they are equal-- thus attacker(xcsp) is false after the previous line*)
 (*//End of testing///*)
-(*******\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\***********************)
+(*******\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\***********************)
 
 let B(yb_1:bitstring)=
 
